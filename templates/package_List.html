@@ -1,0 +1,45 @@
+
+{% block content %}
+
+<div class ="container mt-5">
+
+    <h4>All Packages</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Package ID</th>
+                <th>Client Number</th>
+                <th>Airway Bill</th>
+                <th>Waterway Bill</th>
+                <th>Location</th>
+                <th>Package State</th>
+                <th>Date of Arrival</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for package in packages %}
+            <tr>
+                <td>{{ package.Shipping_id}}</td>
+                <td>{{ package.Client_num}}</td>
+                <td>{{ package.AirwayBill}}</td>
+                <td>{{ package.ShipBill}}</td>
+                <td>{{ package.Location}}</td>
+                <td>{{ package.PackageState}}</td>
+                <td>{{ package.Arrival_Date}}</td>
+                <td>
+                    <a href="{% url 'edit_package' package.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a href="{% url 'delete_package' package.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+</div>
+{% endblock %}
+
+
+
+

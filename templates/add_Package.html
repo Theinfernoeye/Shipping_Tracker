@@ -1,0 +1,51 @@
+
+{% block content %}
+
+<div class ="container mt-5">
+
+    <!--Add table-->
+    <div class="mb-4">
+        <h2>Manage Packages</h2>
+        <h4>Add Package</h4>
+        <form method="post" action="/dashboard">
+                {% csrf_token %}
+                <input type="text" name="Shipping_id" placeholder="Package ID" required>
+                <input type="text" name="Client_num" placeholder="Client Number" required>
+                <input type="text" name="AirwayBill" placeholder="Airway Bill" required>
+                <input type="text" name="ShipBill" placeholder="Waterway Bill" required>
+                <input type="text" name="Location" placeholder="Location" required>
+                <select name="PackageState" class="form-select mb-3" required>
+                    <option value="">Select State</option>
+                    <option value="0">Being Packaged</option>
+                    <option value="1">Leaving warehouse</option>
+                    <option value="2">In Air</option>
+                    <option value="3">On Sea</option>
+                    <option value="5">In country</option>
+                    <option value="5">Ready for pickup</option>
+
+
+                </select>
+                <div class="input-group date mb-3" id="arrivalDatepicker" data-target-input="nearest">
+                    <input type="text" name="Arrival_Date" class="form-control datetimepicker-input" data-target="#arrivalDatepicker" placeholder="Arrival Date" required>
+                    <div class="input-group-append" data-target="#arrivalDatepicker" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Package</button>
+            </form>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#arrivalDatepicker').datepicker({
+                format: 'yyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+</div>
+{%endblock%}
