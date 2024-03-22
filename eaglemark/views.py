@@ -5,6 +5,8 @@ from eaglemark.models import Admin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Q
+
+
 def home(request):
     userLoggedIn = request.session.get('userLoggedIn', False)
     return render(request, "index.html",{'userLoggedIn': userLoggedIn})
@@ -135,6 +137,7 @@ def admin(request):
 def dashboard(request):
     packages=Ship.objects.all()
     return render(request, "dashboard.html", {'packages': packages})
+
 def add_package(request):
     if request.method == 'POST':
         packID = request.POST.get('Shipping_id')
@@ -158,9 +161,10 @@ def add_package(request):
             return redirect('add_package')
         except Exception as e:
             messages.error(request, f'failed: {str(e)}')
-            return HttpResponse(status=405)
+            return redirect('add_package')
 
-    return None
+    return render(request,"add_Package.html")
+
 def package_list(request):
     packages = Ship.objects.all()
     return render(request, "package_List.html", {'packages': packages})
