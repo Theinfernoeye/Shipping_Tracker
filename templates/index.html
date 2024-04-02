@@ -1,42 +1,45 @@
-<!-- index.html -->
 {% include 'header.html' %}
-    <head>
-        <title>{% block title %}Home{% endblock %}</title>
-        {% load bootstrap5 %}
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    </head>
+<head>
+    <title>{% block title %}Home{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
 {% block content %}
-<div class="container">
+
+<div class="pt-lg-3 ps-lg-5" >
     <div class="row text-dark">
-        <div class="col-6">
-            <h1>Welcome</h1>
-            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lacus odio, elementum in gravida
-                feugiat, venenatis id mi. Fusce accumsan aliquam magna, sed vulputate nunc malesuada sed. Etiam viverra
-                lacus ut ex volutpat pellentesque. Nulla facilisi. Sed in mauris ut arcu feugiat faucibus. Sed congue
-                lectus a nunc porta accumsan. Ut pharetra diam eu hendrerit aliquam. Sed sed nulla volutpat, iaculis
-                libero eu, cursus sem. Cras dictum, lorem et tempus faucibus, justo dolor pharetra nunc, sed rutrum
-                lorem massa sed neque. Quisque convallis egestas massa, vitae posuere lorem aliquam sit amet.</p>
+        <div class="col-10 ">
+            <h1>Welcome to EagleMark</h1>
+            <p>EagleMark, established in 2016, has emerged as a frontrunner in the package delivery landscape, offering unparalleled services to its global clientele. Let's delve into the rich history and core values that define EagleMark's journey:</p>
 
-            <p> Cras vel leo nec odio lacinia lacinia ac id tellus. Pellentesque tortor enim, lacinia ac
-                malesuada ac, aliquet a felis. Nulla vel arcu tincidunt, auctor nisl nec, faucibus arcu. Aenean
-                hendrerit ligula id suscipit porta. Quisque ornare sagittis neque, ut ultrices ligula efficitur
-                non. Praesent molestie mauris vel neque vulputate pharetra. Morbi ac mi laoreet ligula
-                condimentum viverra. Duis rutrum felis eget sagittis tempus. Sed imperdiet dui sed ultrices varius.
-                Cras vestibulum libero odio, in ultrices justo blandit ac. Aliquam venenatis tempus velit,
-                vel faucibus elit pharetra ut. Aenean convallis mollis nisi. Proin at bibendum elit,
-                at sagittis felis. Donec elementum tellus nec mattis mattis. Donec vitae mauris ipsum.</p>
+            <h2>Our History</h2>
+            <p>From its inception, EagleMark has been committed to revolutionizing the package delivery industry. Starting as a small venture, we have steadily expanded our operations, leveraging cutting-edge technology and strategic partnerships to optimize our service offerings.</p>
 
-            <p>Donec lacinia vehicula tristique. Duis gravida, dui quis tristique consequat, dolor lorem ornare
-                est, eu scelerisque enim felis nec felis. Duis quis venenatis nibh. Aliquam erat volutpat.
-                Maecenas vehicula sed leo non aliquet. Morbi pellentesque tellus ut sapien cursus,
-                at faucibus quam pretium. Vestibulum nec vulputate est. Nulla odio arcu, vulputate
-                vitae condimentum sit amet, fermentum semper sem. Mauris vel maximus nulla, eget vulputate metus.</p>
+            <h2>Customer-centric Approach</h2>
+            <p>At EagleMark, customers are at the heart of everything we do. We prioritize their needs and strive to deliver exceptional experiences at every touchpoint. Our dedicated customer support team is available round the clock to address inquiries and ensure seamless transactions.</p>
+
+            <h2>Commitment to Excellence</h2>
+            <p>We set high standards for ourselves and are relentless in our pursuit of excellence. Through continuous innovation and process optimization, we aim to exceed industry benchmarks and set new precedents for quality and efficiency.</p>
+
+            <h2>Global Reach and Partnerships</h2>
+            <p>EagleMark has cultivated strong partnerships with leading companies worldwide, enabling us to extend our reach and offer comprehensive shipping solutions. Our collaborations with Chinese enterprises have been particularly instrumental in facilitating seamless trade and logistics.</p>
+
+            <h2>Technology Integration</h2>
+            <p>We embrace technological advancements to streamline operations and enhance customer experiences. Our state-of-the-art tracking systems and digital platforms empower users to monitor shipments in real-time and access valuable insights.</p>
+
+            <h2>Sustainability Initiatives</h2>
+            <p>As a responsible corporate citizen, EagleMark is committed to minimizing its environmental footprint. We employ eco-friendly practices throughout our operations and invest in sustainable transportation solutions to mitigate carbon emissions.</p>
+
+            <h2>Future Outlook</h2>
+            <p>Looking ahead, EagleMark remains steadfast in its commitment to innovation and service excellence. We will continue to adapt to evolving market dynamics and embrace emerging technologies to deliver unmatched value to our customers.</p>
+
+            <p>Experience the EagleMark advantage today and embark on a journey of seamless shipping solutions tailored to your needs. Join hands with us, and let's soar to new heights together!</p>
         </div>
         <div class="col-6 text-end">
-
+            <!-- Add any additional content or visuals here -->
         </div>
     </div>
 </div>

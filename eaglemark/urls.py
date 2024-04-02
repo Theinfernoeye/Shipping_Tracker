@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from eaglemark import views
+from eaglemark.views import edit_package, delete_package
+
 
 urlpatterns = [
     path('',views.home, name="home"),
@@ -10,7 +12,9 @@ urlpatterns = [
     path('tracker', views.tracker, name="tracker"),
     path('help', views.help, name="help"),
     path('admin', views.admin, name="admin"),
-    path('dashboard', views.dashboard, name="dashboard"),
     path('add_package', views.add_package, name="add_package"),
-    path('package_list', views.package_list, name="package_list")
+    path('package_list', views.package_list, name="package_list"),
+    path('edit_package/<str:shipping_id>/', edit_package, name='edit_package'),
+    path('delete_package/<str:shipping_id>/', delete_package, name='delete_package'),
+    path('update_package/<str:shipping_id>/',views.update_package, name='update_package')
     ]

@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard' %}">Package Management</a>
+            <a>Package Management</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -18,10 +18,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'package_list' %}" data-bs-toggle="tab">Package List</a>
+                        <a class="nav-link" href="/package_list" data-bs-toggle="tab">Package List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_package' %}" data-bs-toggle="tab">Add Package</a>
+                        <a class="nav-link" href="/add_package" data-bs-toggle="tab">Add Package</a>
                     </li>
                 </ul>
             </div>
