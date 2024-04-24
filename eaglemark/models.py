@@ -8,6 +8,23 @@ class Admin(models.Model):
     class Meta:
         db_table="admin_list"
 
+class EagleDB(models.Model):
+
+    MARK = models.TextField(primary_key=True)
+    CUSTOMER = models.TextField(blank=True, null=True)
+    BALANCE = models.TextField(blank=True, null=True)
+    Date = models.DateTimeField(blank=True, null=True)
+    Phone = models.IntegerField(blank=True,null=True)
+    ID = models.TextField(blank=True, null=True)
+    Bill_ID = models.TextField(blank=True, null=True)
+    PAID = models.IntegerField(blank=True,null=True)
+    SIGNED = models.IntegerField(blank=True,null=True)
+    LOCATION = models.IntegerField(blank=True,null=True)
+
+    class Meta:
+        db_table="eaglemark"
+
+
 class Ship(models.Model):
     Shipping_id = models.TextField(primary_key=True)
     Client_num_id = models.TextField(blank=True, null=True)
@@ -33,16 +50,12 @@ class User(models.Model):
 
 
 
-def get_state_label(state_value):
+def get_Location(state_value):
     # Define a dictionary mapping integer values to corresponding labels
     state_labels = {
-        0: "Being Packaged",
-        1: "Leaving warehouse",
-        2: "In Air",
-        3: "On Sea",
-        4: "In country",
-        5: "Ready for pickup",
-        6: "Returned"
+        0: "Botswana",
+        1: "China",
+        2: "Turkey"
     }
 
     # Return the label corresponding to the state value, or 'Unknown' if not found

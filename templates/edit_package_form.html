@@ -1,68 +1,72 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
-<div class="modal-content">
-    <div class="modal-body">
-        <form id="editPackageForm" method="post" action="{% url 'update_package' package.Shipping_id %}">
-            {% csrf_token %}
-            <div class="form-group">
-                 {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags == 'error' %}
-                            {% if not message.extra_tags or 'once' not in message.extra_tags %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ message }}
-                                </div>
-                            {% endif %}
-                        {% elif message.tags == 'success' %}
-                            {% if not message.extra_tags or 'once' not in message.extra_tags %}
-                                <div class="alert alert-success" role="alert">
-                                    {{ message }}
-                                </div>
-                            {% endif %}
+<div class="modal fade" id="editPackageModal" tabindex="-1" aria-labelledby="editPackageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPackageModalLabel">Edit Package</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPackageForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                         {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags == 'error' %}
+                                    {% if not message.extra_tags or 'once' not in message.extra_tags %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% elif message.tags == 'success' %}
+                                    {% if not message.extra_tags or 'once' not in message.extra_tags %}
+                                        <div class="alert alert-success" role="alert">
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
-                    {% endfor %}
-                {% endif %}
-                <label for="editShippingId">Package ID</label>
-                <input type="text" class="form-control" id="editShippingId" name="Shipping_id" value="{{ package.Shipping_id }}" readonly>
+                        <label for="editMARK">MARK</label>
+                        <input type="text" class="form-control" id="MARK" name="MARK" value="{{ package.MARK }}" readonly>
+                    </div>
+                    <div class="form-group">
+                                <label for="editPhone">Phone</label>
+                                <input type="text" class="form-control" id="editPhone" name="phone">
+                            </div>
+                    <div class="form-group">
+                                <label for="editBillId">Bill ID</label>
+                                <input type="text" class="form-control" id="editBillId" name="bill_id">
+                            </div>
+                    <div class="form-group">
+                                <label for="editPackageState">Location</label>
+                                <select class="form-control" id="editLocation" name="PackageState">
+                                    <!-- Add options based on your specific requirements -->
+                                    <option value="">Select State</option>
+                                    <option value="0">Botswana</option>
+                                    <option value="1">China</option>
+                                    <option value="2">Turkey</option>
+                                </select>
+                            </div>
+                    <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="editPaid" name="paid">
+                                    <label class="form-check-label" for="editPaid">Paid</label>
+                                </div>
+                            </div>
+                    <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="editPickedUp" name="picked_up">
+                                    <label class="form-check-label" for="editPickedUp">Picked Up</label>
+                                </div>
+                            </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="editClientNum">Client Number</label>
-                <input type="text" class="form-control" id="editClientNum" name="Client_num" value="{{ package.Client_num_id }}">
-            </div>
-            <div class="form-group">
-                <label for="editAirwayBill">Airway Bill</label>
-                <input type="text" class="form-control" id="editAirwayBill" name="AirwayBill" value="{{ package.AirwayBill }}">
-            </div>
-            <div class="form-group">
-                <label for="editShipBill">Waterway Bill</label>
-                <input type="text" class="form-control" id="editShipBill" name="ShipBill" value="{{ package.ShipBill }}">
-            </div>
-            <div class="form-group">
-                <label for="editLocation">Location</label>
-                <input type="text" class="form-control" id="editLocation" name="Location" value="{{ package.Location }}">
-            </div>
-            <div class="form-group">
-                <label for="editPackageState">Package State</label>
-                <select class="form-control" id="editPackageState" name="PackageState">
-                    <!-- Add options based on your specific requirements -->
-                    <option value="0">Being Packaged</option>
-                    <option value="1">Leaving warehouse</option>
-                    <option value="2">In Air</option>
-                    <option value="3">On Sea</option>
-                    <option value="4">In country</option>
-                    <option value="5">Ready for pickup</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <div class="input-group date sb" id="arrivalDatepicker" data-date-format="yyyy-mm-dd">
-                    <input type="text" name="Arrival_Date" class="form-control"placeholder="please fill">
-                    <span class="input-group-append">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                    </span>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -74,51 +78,27 @@
 
 {% block javascript %}
 <script>
-    var updatePackageUrl = '{% url "update_package" package.Shipping_id %}';
 
     $(document).ready(function() {
-        // Edit package
-        $('.edit-package').click(function() {
-            var shipping_id = $(this).data('shipping-id');
-            $.get('/edit_package/' + shipping_id + '/', function(data) {
-                $('#editPackageModal .modal-body').html(data);
-                $('#editPackageModal').modal('show'); // Show the modal
-            });
-        });
-
-        $('#arrivalDatepicker').datepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true,
-                todayHighlight: true
-            });
-
-        // Submit edit form
         $('#editPackageForm').submit(function(event) {
             // Prevent the default form submission
             event.preventDefault();
+            var mark = $(this).data;
+            $.post('/update_package/'+mark+'/',$(this).serialize(),function (response) {
+                // Send a POST request to the server
+                $.ajax({
+                    type: 'POST',
+                    url: '/update_package/{{ package.MARK }}', // Use Django's URL template tag
+                    data: formData,
+                    success: function (response) {
+                        $('#editPackageModal').modal('hide'); // Hide the modal
+                        location.reload();  // Reload the page to reflect the changes
+                    },
+                    error: function (xhr, errmsg, err) {
 
-            // Serialize the form data
-            var formData = $(this).serialize();
-
-            // Get the shipping ID from the form action attribute using Django's template language
-            var shippingId = $(this).attr('action').split('/').pop(); // Extract the shipping ID from the URL
-
-            // Send a POST request to the server
-            $.ajax({
-                type: 'POST',
-                url: updatePackageUrl, // Use Django's URL template tag
-                data: formData,
-                success: function(response) {
-                    // Handle the success response
-                    // For example, you can close the modal or show a success message
-                    $('#editPackageModal').modal('hide'); // Hide the modal
-                    location.reload();  // Reload the page to reflect the changes
-                },
-                error: function(xhr, errmsg, err) {
-                    // Handle any errors
-                    // For example, you can show an error message to the user
-                    console.log(xhr.status + "Cant make changes " + xhr.responseText);  // Log the error for debugging
-                }
+                        console.log(xhr.status + "Cant make changes " + xhr.responseText);  // Log the error for debugging
+                    }
+                });
             });
         });
     });

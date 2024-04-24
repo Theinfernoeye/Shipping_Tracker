@@ -3,33 +3,34 @@
 
 <div class="container mt-5">
     <h4>All Packages</h4>
-    <table class="table table-striped table-bordered table-hover table-condensed"
-      style="border: #2F4F4F">
+    <table class="table table-striped table-bordered table-hover table-condensed" style="border: #2F4F4F">
         <thead>
             <tr>
-                <th>Package ID</th>
-                <th>Client Number</th>
-                <th>Airway Bill</th>
-                <th>Waterway Bill</th>
+                <th>MARK</th>
+                <th>CUSTOMER</th>
+                <th>BALANCE</th>
+                <th>PHONE</th>
+                <th>Bill_ID</th>
                 <th>Location</th>
-                <th>Package State</th>
-                <th>Date of Arrival</th>
+                <th>PAID</th>
+                <th>Picked Up</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for package in packages %}
             <tr>
-                <td>{{ package.Shipping_id}}</td>
-                <td>{{ package.Client_num_id}}</td>
-                <td>{{ package.AirwayBill}}</td>
-                <td>{{ package.ShipBill}}</td>
-                <td>{{ package.Location}}</td>
-                <td>{{ package.state_label }}</td>
-                <td>{{ package.Arrival_Date}}</td>
+                <td>{{ package.MARK }}</td>
+                <td>{{ package.CUSTOMER }}</td>
+                <td>{{ package.BALANCE }}</td>
+                <td>{{ package.Phone }}</td>
+                <td>{{ package.Bill_ID }}</td>
+                <td>{{ package.Location }}</td>
+                <td>{{ package.PAID }}</td>
+                <td>{{ package.SIGNED }}</td>
                 <td>
-                    <button data-shipping-id="{{ package.Shipping_id }}" class="btn btn-sm btn-outline-primary edit-package">Edit</button>
-                    <button data-shipping-id="{{ package.Shipping_id }}" class="btn btn-sm btn-outline-danger delete-package">Delete</button>
+                    <button class="btn btn-sm btn-outline-primary edit-package" data-mark-id="{{ package.MARK }}" >Edit</button>
+                    <button Class="btn btn-sm btn-outline-danger delete-package" data-mark-id="{{ package.MARK }}" >Delete</button>
                 </td>
             </tr>
             {% endfor %}
@@ -75,65 +76,37 @@
     </div>
 </div>
 
-
-{% block javascript %}
-<script>
-    // Edit package
-   // Edit package
-    $('.edit-package').click(function() {
-        var shipping_id = $(this).data('shipping-id'); // Change here
-        $.get('/edit_package/' + shipping_id, function(data) {
-            $('#editPackageModal .modal-body').html(data);
-            $('#editPackageModal').modal('show');
-        });
-    });
-
-    // Delete package
-    $('.delete-package').click(function() {
-        var shipping_id = $(this).data('shipping-id');
-        $('#confirmDeleteBtn').data('shipping-id', shipping_id);
-        $('#deletePackageModal').modal('show');
-    });
-
-
-    $('#confirmDeleteBtn').click(function() {
-        var shipping_id = $(this).data('shipping-id');
-        $.ajax({
-            type: 'POST',
-            url: '/delete_package/' + shipping_id + '/',  // Adjust the URL if needed
-             headers: {
-                'X-CSRFToken': '{{ csrf_token }}'  // Include the CSRF token in the headers
-            },
-            success: function(response) {
-                // Reload the page or update the package list dynamically
-                location.reload();
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.log('Error:', errorThrown);
-            }
-        });
-    });
-
-    // Submit edit form
-    $('#editPackageForm').submit(function(event) {
-        event.preventDefault();
-        var form = $(this);
-        $.ajax({
-            type: form.attr('method'),
-            url: form.attr('action'),
-            data: form.serialize(),
-            success: function(response) {
-                $('#editPackageModal').modal('hide');
-                // Reload the page or update the package list dynamically
-                location.reload();
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.log('Error:', errorThrown);
-            }
-        });
-    });
-</script>
 {% endblock %}
 
+
+{% block javascript %}
+
+
+<script>
+
+        // Edit package
+        $('.edit-package').click(function() {
+            var mark = $(this).data('mark-id');
+            console.log('mark = ' + mark);
+            $.get('/edit_package/' + mark + '/', function(data) {
+                $('#editPackageModal .modal-body').html(data);
+                $('#editPackageModal').modal('show'); // Show the modal
+            });
+        });
+ // Delete package
+        $('.delete-package').click(function() {
+            var mark = $(this).data('mark-id');
+            $('#confirmDeleteBtn').data('mark-id', mark);
+            $('#deletePackageModal').modal('show');
+        });
+
+        $('#confirmDeleteBtn').click(function() {
+            var mark = $(this).data('mark-id');
+            $.post('/delete_package/' + mark, function() {
+                // Reload the page or update the package list dynamically
+                location.reload();
+            });
+        });
+</script>
 
 {% endblock %}

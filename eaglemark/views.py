@@ -1,7 +1,13 @@
+import csv
+import io
+from io import TextIOWrapper
+from typing import TextIO
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from eaglemark.models import User, Ship,get_state_label
+from eaglemark.models import User, Ship,get_Location
 from eaglemark.models import Admin
+from eaglemark.models import EagleDB
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.decorators import user_passes_test
@@ -111,7 +117,7 @@ def tracker(request):
         packages = Ship.objects.filter(Client_num_id=session_id)
         for package in packages:
             # Translate the state value into a label
-            package.state_label = get_state_label(package.State)
+            package.state_label = get_Location(package.Location)
 
     if request.method == "POST":
         search = request.POST.get('search')
@@ -121,7 +127,7 @@ def tracker(request):
         else:
             for package in packages:
                 # Translate the state value into a label
-                package.state_label = get_state_label(package.State)
+                package.state_label = get_Location(package.State)
 
     if not packages and not message:
         message = "No package for you yet, call our local office if there is an issue "
@@ -174,69 +180,122 @@ def admin_required(view_func):
     return _wrapped_view
 
 @admin_required
+
 def add_package(request):
     if request.method == 'POST':
         try:
-            # Create a new Ship object with the provided data
+            # Check if a CSV file is uploaded
+            if 'excel_file' in request.FILES:
+                csv_file = request.FILES['excel_file']
+                if csv_file:
+                    try:
+                        # Check if the uploaded file is a CSV
+                        if not csv_file.name.endswith('.csv'):
+                            messages.error(request, 'Uploaded file is not a CSV')
+                            return redirect('add_package')
 
-            Ship.objects.create(
-                Shipping_id=request.POST.get('Shipping_id'),
-                Client_num_id=request.POST.get('Client_num'),
-                Location=request.POST.get('Location'),
-                State=request.POST.get('PackageState'),
-                Arrival_Date=request.POST.get('Arrival_Date'),
-                AirwayBill=request.POST.get('AirwayBill'),
-                ShipBill=request.POST.get('ShipBill')
-            )
-            messages.success(request, 'Package added successfully')
-            return redirect('add_package')
+                        # Read data from CSV file and create Ship objects
+                        reader = csv.reader(io.TextIOWrapper(csv_file, encoding='utf-8'))
+                        next(reader)  # Skip header row
+                        for row in reader:
+                            MARK, CUSTOMER, BALANCE = row[:3]
+                            EagleDB.objects.create(
+                                MARK=MARK,
+                                CUSTOMER=CUSTOMER,
+                                BALANCE=BALANCE
+                            )
+                        messages.success(request, 'Packages added successfully from CSV')
+                        return redirect('add_package')
+                    except Exception as e:
+                        messages.error(request, f'Failed to add packages from CSV: {str(e)}')
+                        return redirect('add_package')
+                else:
+                    messages.error(request, 'No file uploaded')
+                    return redirect('add_package')
+            else:
+                # Check for manual input
+                if all(request.POST.get(field) for field in ['Mark', 'Customer', 'Balance']):
+                    try:
+                        Date = request.POST.get('Date')
+                        if Date:
+                            Date = datetime.strptime(Date, '%Y-%m-%d').date()
+                        else:
+                            Date = None
+                        EagleDB.objects.create(
+                            MARK=request.POST.get('Mark'),
+                            CUSTOMER=request.POST.get('Customer'),
+                            BALANCE=request.POST.get('Balance'),
+                            ID=request.POST.get('ID'),
+                            LOCATION=request.POST.get('Location'),
+                            Phone=request.POST.get('Phone'),
+                            Date=Date
+
+                        )
+                        messages.success(request, 'Package added successfully')
+                        return redirect('add_package')
+                    except Exception as e:
+                        messages.error(request, f'Failed to add package: {str(e)}')
+                        return redirect('add_package')
+                else:
+                    messages.error(request, 'Please fill all required fields')
+                    return redirect('add_package')
         except Exception as e:
             messages.error(request, f'Failed to add package: {str(e)}')
             return redirect('add_package')
-
     return render(request, "add_Package.html")
 
 @admin_required
 def package_list(request):
-    packages = Ship.objects.all()
+    packages = EagleDB.objects.all()
     for package in packages:
         # Translate the state value into a label
-        package.state_label = get_state_label(package.State)
+        package.state_label = get_Location(package.LOCATION)
     return render(request, "package_List.html", {'packages': packages})
 
 @admin_required
-def edit_package(request,shipping_id):
-    package = get_object_or_404(Ship, Shipping_id=shipping_id)
+def edit_package(request,mark):
+    package = get_object_or_404(EagleDB, MARK=mark)
     return render(request, 'edit_package_form.html', {'package': package})
 
 @admin_required
-def delete_package(request, shipping_id):
+def delete_package(request, mark):
     if request.method == 'POST':
-        package = get_object_or_404(Ship, Shipping_id=shipping_id)
+        package = get_object_or_404(EagleDB, MARK=mark)
         package.delete()
         return JsonResponse({'message': 'Package deleted successfully.'})
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
-
 @admin_required
-def update_package(request,shipping_id):
+def update_package(request, MARK):
     if request.method == 'POST':
         try:
-            package = Ship.objects.get(Shipping_id=shipping_id)
-            package.Client_num = request.POST.get('Client_num')
-            package.AirwayBill = request.POST.get('AirwayBill')
-            package.ShipBill = request.POST.get('ShipBill')
-            package.Location = request.POST.get('Location')
-            package.State = request.POST.get('PackageState')
-            package.Arrival_Date = request.POST.get('Arrival_Date')
+            # Retrieve the package instance
+            package = EagleDB.objects.get(MARK=MARK)
+
+            # Update package fields based on form data
+            package.Phone = request.POST.get('phone')
+            package.Bill_ID = request.POST.get('bill_id')
+            package.PAID = request.POST.get('paid') == 'on'  # Assuming 'paid' is a checkbox
+            package.Location = request.POST.get('location')
+            package.SIGNED = request.POST.get('picked_up') == 'on'  # Assuming 'picked_up' is a checkbox
+
+            # Save the updated package
             package.save()
-            messages.success(request, 'Package updated successfully')
-        except Ship.DoesNotExist:
-            messages.error(request, 'Package not found')
+
+            # Return a success response
+            return JsonResponse({'success': True, 'message': 'Package updated successfully'})
+
+        except EagleDB.DoesNotExist:
+            # Package not found
+            return JsonResponse({'success': False, 'message': 'Package not found'}, status=404)
+
         except Exception as e:
-            messages.error(request, f'Failed to update package: {str(e)}')
-    return redirect('package_list')
+            # Error occurred while updating package
+            return JsonResponse({'success': False, 'message': f'Failed to update package: {str(e)}'}, status=500)
+
+    # Method other than POST is not supported
+    return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
 
 
 
