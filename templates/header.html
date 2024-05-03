@@ -1,10 +1,8 @@
 {% load static %}
-
-
 <header>
 
     <nav class="navbar navbar-expand-lg navbar-dark justify-content-between"
-    style="background-color:#E6E6FA">
+    style="background-color:#C0C0C0; ">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a href="{% url 'home' %}">
@@ -31,9 +29,6 @@
                             {% csrf_token %}
                             <div class="input-group">
                                 <input class="form-control mr-sm-2 col-lg-8" type="search" placeholder="Search for package" name="search" id="search">
-                                <a type="submit">
-                                    <img src="{% static 'Search.svg' %}" alt="search" class="img-responsive rounded" width="35">
-                                </a>
                                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                             </div>
                         </form>
@@ -44,7 +39,6 @@
                     {% if userLoggedIn %}
                         <li class="nav-item">
                           <a href="{% url 'signout' %}">
-                            <img src="{% static 'Signout.svg' %}" alt="logo" class="img-responsive" width="50" height="50">
                              Sign Out</a>
                         </li>
                     {% else %}

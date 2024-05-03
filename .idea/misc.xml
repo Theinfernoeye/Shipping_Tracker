@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkUUID" value="756d6699-18f0-4e90-b152-23d38b95bf75" />
+  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (Shipping_Tracker)" project-jdk-type="Python SDK" />
 </project>

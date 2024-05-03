@@ -1,72 +1,42 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-
-<div class="modal fade" id="editPackageModal" tabindex="-1" aria-labelledby="editPackageModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editPackageModalLabel">Edit Package</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal-content">
+    <div class="modal-body">
+        <form id="editPackageForm" method="post" action="{% url 'update_package' package.MARK %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="editMARK">MARK</label>
+                <input type="text" class="form-control" id="MARK" name="MARK" value="{{ package.MARK }}" readonly>
             </div>
-            <div class="modal-body">
-                <form id="editPackageForm">
-                    {% csrf_token %}
-                    <div class="form-group">
-                         {% if messages %}
-                            {% for message in messages %}
-                                {% if message.tags == 'error' %}
-                                    {% if not message.extra_tags or 'once' not in message.extra_tags %}
-                                        <div class="alert alert-danger" role="alert">
-                                            {{ message }}
-                                        </div>
-                                    {% endif %}
-                                {% elif message.tags == 'success' %}
-                                    {% if not message.extra_tags or 'once' not in message.extra_tags %}
-                                        <div class="alert alert-success" role="alert">
-                                            {{ message }}
-                                        </div>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                        <label for="editMARK">MARK</label>
-                        <input type="text" class="form-control" id="MARK" name="MARK" value="{{ package.MARK }}" readonly>
-                    </div>
-                    <div class="form-group">
-                                <label for="editPhone">Phone</label>
-                                <input type="text" class="form-control" id="editPhone" name="phone">
-                            </div>
-                    <div class="form-group">
-                                <label for="editBillId">Bill ID</label>
-                                <input type="text" class="form-control" id="editBillId" name="bill_id">
-                            </div>
-                    <div class="form-group">
-                                <label for="editPackageState">Location</label>
-                                <select class="form-control" id="editLocation" name="PackageState">
-                                    <!-- Add options based on your specific requirements -->
-                                    <option value="">Select State</option>
-                                    <option value="0">Botswana</option>
-                                    <option value="1">China</option>
-                                    <option value="2">Turkey</option>
-                                </select>
-                            </div>
-                    <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="editPaid" name="paid">
-                                    <label class="form-check-label" for="editPaid">Paid</label>
-                                </div>
-                            </div>
-                    <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="editPickedUp" name="picked_up">
-                                    <label class="form-check-label" for="editPickedUp">Picked Up</label>
-                                </div>
-                            </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
+            <div class="form-group">
+                <label for="editPhone">Phone</label>
+                <input type="text" class="form-control" id="editPhone" name="phone" value="{{ package.Phone }}">
             </div>
-        </div>
+            <div class="form-group">
+                <label for="editBillId">Bill ID</label>
+                <input type="text" class="form-control" id="editBillId" name="bill_id" value="{{ package.Bill_ID }}">
+            </div>
+            <div class="form-group">
+                <label for="editLocation">Location</label>
+                <select name="location" class="form-control" id="editLocation">
+                    <option value="">Select Location</option>
+                    <option value="0" {% if package.LOCATION == '0' %} selected {% endif %}>Botswana</option>
+                    <option value="1" {% if package.LOCATION == '1' %} selected {% endif %}>China</option>
+                    <option value="2" {% if package.LOCATION == '2' %} selected {% endif %}>Turkey</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="editPaid" name="paid" {% if package.PAID %} checked {% endif %}>
+                    <label class="form-check-label" for="editPaid">Paid</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="editPickedUp" name="picked_up" {% if package.SIGNED %} checked {% endif %}>
+                    <label class="form-check-label" for="editPickedUp">Picked Up</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
     </div>
 </div>
 
@@ -76,33 +46,63 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 
-{% block javascript %}
+{% block javascript  %}
+
 <script>
+jQuery(document).ready(function($) {
+    $('.edit-package').click(function() {
+        var mark = $(this).data('mark-id');
+        $.get('/edit_package/' + mark + '/', function(data) {
+            $('#editPackageModal .modal-body').html(data);
 
-    $(document).ready(function() {
-        $('#editPackageForm').submit(function(event) {
-            // Prevent the default form submission
-            event.preventDefault();
-            var mark = $(this).data;
-            $.post('/update_package/'+mark+'/',$(this).serialize(),function (response) {
-                // Send a POST request to the server
-                $.ajax({
-                    type: 'POST',
-                    url: '/update_package/{{ package.MARK }}', // Use Django's URL template tag
-                    data: formData,
-                    success: function (response) {
-                        $('#editPackageModal').modal('hide'); // Hide the modal
-                        location.reload();  // Reload the page to reflect the changes
-                    },
-                    error: function (xhr, errmsg, err) {
+            // Get the current location value
+            var currentLocation = '{{ package.LOCATION }}';
 
-                        console.log(xhr.status + "Cant make changes " + xhr.responseText);  // Log the error for debugging
-                    }
-                });
-            });
+            // Set the selected option based on the current location value
+            $('#editLocation').val(currentLocation);
+
+            $('#editPackageModal').modal('show'); // Show the modal
         });
     });
+
+    $('#editPackageForm').submit(function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Serialize the form data
+    var formData = $(this).serialize();
+
+    // Send a POST request to the server
+    $.ajax({
+        type: 'POST',
+        url: '{% url "update_package" package.MARK %}',
+        data: formData,
+        success: function(response) {
+            // Hide the modal if the form submission is successful
+            $('#editPackageModal').modal('hide');
+
+            // Display the success message
+            $('#editPackageModal .modal-body').html('<div class="alert alert-success" role="alert">Package updated successfully</div>');
+
+            // Reload the page after a short delay
+            setTimeout(function() {
+                // Redirect to the same URL to avoid resubmission
+                window.location.href = window.location.href;
+            }, 2000); // 2000 milliseconds = 2 seconds
+        },
+        error: function(xhr, errmsg, err) {
+            console.log(xhr.status + "Can't make changes " + xhr.responseText); // Log the error for debugging
+        }
+    });
+});
+
+
+
+    // Store the original form data
+    var originalFormData = $('#editPackageForm').serialize();
+    $('#editPackageForm').data('original-form-data', originalFormData);
+});
 </script>
+
+
 {% endblock %}
-
-

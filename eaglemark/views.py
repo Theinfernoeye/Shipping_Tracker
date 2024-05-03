@@ -2,13 +2,18 @@ import csv
 import io
 from io import TextIOWrapper
 from typing import TextIO
-
-from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
+
+from eaglemark import models
 from eaglemark.models import User, Ship,get_Location
 from eaglemark.models import Admin
 from eaglemark.models import EagleDB
 from django.contrib import messages
+from django.urls import reverse
+from django.db.models import F, Case, When
+from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
@@ -108,42 +113,32 @@ def tracker(request):
     userLoggedIn = request.session.get('userLoggedIn', False)
     packages = None
     message = None
-    bill = None  # Initialize bill variable here
+    bill = None
     bill_list = []
-    print('user_num' in request.session)
 
     if 'user_num' in request.session:
         session_id = request.session['user_num']
-        packages = Ship.objects.filter(Client_num_id=session_id)
+        packages = EagleDB.objects.filter(Phone=session_id)
         for package in packages:
-            # Translate the state value into a label
-            package.state_label = get_Location(package.Location)
+            # Determine if the package is ready for pickup
+            package.ready_for_pickup = package.LOCATION == 0  # Assuming 0 represents Botswana
+            package.state_label = get_Location(package.LOCATION)
 
     if request.method == "POST":
         search = request.POST.get('search')
-        packages = Ship.objects.filter(Q(Shipping_id=search) | Q(AirwayBill=search) | Q(ShipBill=search))
+        packages = EagleDB.objects.filter(Q(Bill_ID=search) | Q(MARK=search))
         if not packages:
             message = "No packages found"
         else:
             for package in packages:
-                # Translate the state value into a label
-                package.state_label = get_Location(package.State)
-
+                # Determine if the package is ready for pickup
+                package.ready_for_pickup = package.LOCATION == 0  # Assuming 0 represents Botswana
+                package.state_label = get_Location(package.LOCATION)
     if not packages and not message:
         message = "No package for you yet, call our local office if there is an issue "
 
-    if packages is not None:
-        for package in packages:
-            if not package.AirwayBill:
-                bill_list.append(package.AirwayBill)
-            else:
-                bill_list.append(package.ShipBill)
-        bill = ', '.join(bill_list)
-        print(bill)
-
-    return render(request, "tracker.html", {'packages': packages, 'message': message, 'userLoggedIn': userLoggedIn, 'bill': bill})
-
-
+    return render(request, "tracker.html",
+                  {'packages': packages, 'message': message, 'userLoggedIn': userLoggedIn, 'bill': bill})
 
 def help(request):
     userLoggedIn = request.session.get('userLoggedIn', False)
@@ -180,7 +175,6 @@ def admin_required(view_func):
     return _wrapped_view
 
 @admin_required
-
 def add_package(request):
     if request.method == 'POST':
         try:
@@ -267,8 +261,9 @@ def delete_package(request, mark):
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 @admin_required
+@require_POST
 def update_package(request, MARK):
-    if request.method == 'POST':
+
         try:
             # Retrieve the package instance
             package = EagleDB.objects.get(MARK=MARK)
@@ -276,15 +271,19 @@ def update_package(request, MARK):
             # Update package fields based on form data
             package.Phone = request.POST.get('phone')
             package.Bill_ID = request.POST.get('bill_id')
+            package.LOCATION = request.POST.get('location')
+            l = request.POST.get('location')
             package.PAID = request.POST.get('paid') == 'on'  # Assuming 'paid' is a checkbox
-            package.Location = request.POST.get('location')
             package.SIGNED = request.POST.get('picked_up') == 'on'  # Assuming 'picked_up' is a checkbox
+
+            print(l)
 
             # Save the updated package
             package.save()
 
             # Return a success response
-            return JsonResponse({'success': True, 'message': 'Package updated successfully'})
+            return HttpResponseRedirect(reverse('package_list'))
+
 
         except EagleDB.DoesNotExist:
             # Package not found
@@ -295,7 +294,7 @@ def update_package(request, MARK):
             return JsonResponse({'success': False, 'message': f'Failed to update package: {str(e)}'}, status=500)
 
     # Method other than POST is not supported
-    return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
 
 
 
